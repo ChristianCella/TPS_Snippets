@@ -17,6 +17,8 @@ using Jack.Toolkit.TSB;
 using scaleParam = Jack.Toolkit.jcAdvancedAnthroScale.input;
 
 // Random comment
+// Second random comment
+
 
 public class MainScript
 {
