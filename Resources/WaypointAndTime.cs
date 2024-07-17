@@ -42,7 +42,7 @@ public class MainScript
         {
         	dDuration += point.Duration;
         	String Name = point.Name;
-        	 TxMessageBox.Show(string.Format(Name), "Waypoint Name", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        	TxMessageBox.Show(string.Format(Name), "Waypoint Name", MessageBoxButtons.OK, MessageBoxIcon.Information);
         	
         }
         
