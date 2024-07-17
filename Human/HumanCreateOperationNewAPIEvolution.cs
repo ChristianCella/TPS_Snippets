@@ -36,9 +36,9 @@ public class MainScript
     	// Set some control variables   	
     	string selected_name = "Pick&PlaceObject";
     	
-    	int posx_pick = 550;
-    	int posy_pick = -350;
-    	int posz_pick = 0;
+    	int posx_pick = 400;
+    	int posy_pick = 0;
+    	int posz_pick = 25;
     	
     	int posx_place = 400;
     	int posy_place = -200;
@@ -53,11 +53,6 @@ public class MainScript
 		humans = TxApplication.ActiveDocument.GetObjectsByName("Jack");
 		TxHuman human = humans[0] as TxHuman;
 		
-		// Get the reference frame of the object		
-		TxObjectList refs = TxApplication.ActiveSelection.GetItems();
-		refs = TxApplication.ActiveDocument.GetObjectsByName("fr_drill");
-		TxFrame fram = refs[0] as TxFrame;
-		
 		// Apply a certain position to the human and save it in a variable
 		human.ApplyPosture("Leaned");
 		TxHumanPosture posture_lean = human.GetPosture();
@@ -67,9 +62,14 @@ public class MainScript
 		TxHumanPosture posture_home = human.GetPosture(); 
 		TxApplication.RefreshDisplay();
 		
+		// Get the reference frame of the cube		
+		TxObjectList ref_frame_cube = TxApplication.ActiveSelection.GetItems();
+		ref_frame_cube = TxApplication.ActiveDocument.GetObjectsByName("fr_cube");
+		TxFrame frame_cube = ref_frame_cube[0] as TxFrame;
+		
 		// Get the object for the pick	(Also, refresh the display)	
 		TxObjectList cube_pick = TxApplication.ActiveSelection.GetItems();
-		cube_pick = TxApplication.ActiveDocument.GetObjectsByName("Drill");
+		cube_pick = TxApplication.ActiveDocument.GetObjectsByName("YAOSC_cube1");
 		var cube1 = cube_pick[0] as ITxLocatableObject;
 		
 		var position_pick = new TxTransformation(cube1.AbsoluteLocation);
@@ -85,7 +85,7 @@ public class MainScript
     		TxTransformation rightHandTarget = null;
         	taskCreationData.RightHandAutoGrasp = true;
         	rightHandTarget = new TxTransformation();
-        	rightHandTarget = (fram as ITxLocatableObject).AbsoluteLocation;
+        	rightHandTarget = (frame_cube as ITxLocatableObject).AbsoluteLocation;
         	taskCreationData.RightHandAutoGraspTargetLocation =  rightHandTarget *= new TxTransformation(new TxVector(0, 0, 30), TxTransformation.TxTransformationType.Translate);
     	}
     	else // Grasp with left hand
@@ -94,12 +94,14 @@ public class MainScript
 			TxTransformation leftHandTarget = null;
         	taskCreationData.LeftHandAutoGrasp = true;
         	leftHandTarget = new TxTransformation();
-        	leftHandTarget = (fram as ITxLocatableObject).AbsoluteLocation;
+        	leftHandTarget = (frame_cube as ITxLocatableObject).AbsoluteLocation;
         	taskCreationData.LeftHandAutoGraspTargetLocation =  leftHandTarget *= new TxTransformation(new TxVector(0, 0, 30), TxTransformation.TxTransformationType.Translate);
     	}  
     	
     	// Create the simulation  		
     	op = TxHumanTSBSimulationUtilsEx.CreateSimulation(selected_name);
+    	op.SetInitialContext();
+        op.ForceResimulation();
     	
     	// Create the 'get' task 		
 		taskCreationData.Human = human;						
@@ -108,6 +110,8 @@ public class MainScript
 		taskCreationData.TargetLocation = position_pick;	
 		taskCreationData.KeepUninvolvedHandStill = true;				
 		TxHumanTsbTaskOperation tsbGetTask = op.CreateTask(taskCreationData);
+		op.ApplyTask(tsbGetTask, 1);
+   		TxApplication.RefreshDisplay();	
 		
 		// Set the intermediate pose to be reached by the human
 		human.SetPosture(posture_lean);		
@@ -116,7 +120,9 @@ public class MainScript
 		taskCreationData.Human = human;					
    		taskCreationData.TaskType = TsbTaskType.HUMAN_Pose;	
 		taskCreationData.TaskDuration = 0.7;		
-   		TxHumanTsbTaskOperation tsbPoseTaskInt = op.CreateTask(taskCreationData, tsbGetTask);  		
+   		TxHumanTsbTaskOperation tsbPoseTaskInt = op.CreateTask(taskCreationData, tsbGetTask); 
+   		op.ApplyTask(tsbPoseTaskInt, 1);
+   		TxApplication.RefreshDisplay();	 		
    		
    		// Set the place position (if you need, also rotate the object)		
    		var position_place = new TxTransformation(cube1.AbsoluteLocation);
@@ -129,6 +135,8 @@ public class MainScript
    		taskCreationData.TargetLocation = position_place;					
    		taskCreationData.TaskType = TsbTaskType.HUMAN_Put;			
    		TxHumanTsbTaskOperation tsbPutTask = op.CreateTask(taskCreationData, tsbPoseTaskInt);
+   		op.ApplyTask(tsbPutTask, 1);
+   		TxApplication.RefreshDisplay();
    		
    		// Set the correct pose to be reached by the human
 		human.SetPosture(posture_home);
@@ -138,9 +146,9 @@ public class MainScript
    		taskCreationData.TaskType = TsbTaskType.HUMAN_Pose;	
 		taskCreationData.TaskDuration = 0.7;		
    		TxHumanTsbTaskOperation tsbPoseTask = op.CreateTask(taskCreationData, tsbPutTask);
+   		op.ApplyTask(tsbPoseTask, 1);
+   		TxApplication.RefreshDisplay();
    		
-   		// Set the initial context (and force the resimulation)   	
-    	op.SetInitialContext();
-        op.ForceResimulation();
+   		
     }
 }
