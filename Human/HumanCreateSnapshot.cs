@@ -55,6 +55,7 @@ public class MainScript
 		// Return everything to the original positions		
 		TxApplySnapshotParams snapParam = new TxApplySnapshotParams();
         snapParam.ObjectsLocation = true;
+		snapParam.ObjectsVisibility = true;
         snapParam.ObjectsAttachments = true;
         snapParam.DevicePoses = true; // Also applies to Human postures               
         txSnapshot.Apply(snapParam);
