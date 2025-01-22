@@ -15,15 +15,14 @@ public class MainScript
 	{
 	
 		// Get the position and the orientation of a point	
-		TxRoboticViaLocationOperation via1 = TxApplication.ActiveDocument.
-        GetObjectsByName("point1")[0] as TxRoboticViaLocationOperation;
+		TxFrame via1 = TxApplication.ActiveDocument.
+        GetObjectsByName("fr1")[0] as TxFrame;
         
         // Define a variable for the inverse kinematics       
 		TxRobotInverseData inv = new TxRobotInverseData
 		(via1.AbsoluteLocation);
 		
-		// Save in a variable the instance of the robot	
-		
+		// Save in a variable the instance of the robot			
 		TxObjectList selectedObjects = TxApplication.ActiveSelection.GetItems();
 		selectedObjects = TxApplication.ActiveDocument.GetObjectsByName("UR5e");		
 		var Robot = selectedObjects[0] as TxRobot;
