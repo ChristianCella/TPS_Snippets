@@ -120,7 +120,7 @@ public class MainScript
 		FifthPoint.AbsoluteLocation = rotX5;
 		
 		var pointE = new TxTransformation(FifthPoint.AbsoluteLocation);
-		pointE.Translation = new TxVector(650, -305, 300);
+		pointE.Translation = new TxVector(2000, -305, 300);
 		FifthPoint.AbsoluteLocation = pointE;
 
 		// NOTE: you must associate the robot to the operation!
